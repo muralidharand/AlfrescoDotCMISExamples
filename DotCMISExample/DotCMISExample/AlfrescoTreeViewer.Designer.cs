@@ -60,6 +60,7 @@
             this.btnView.TabIndex = 2;
             this.btnView.Text = "View";
             this.btnView.UseVisualStyleBackColor = true;
+            this.btnView.Click += new System.EventHandler(this.btnView_Click);
             // 
             // btnDownload
             // 
@@ -95,6 +96,7 @@
             this.Controls.Add(this.treeView1);
             this.Name = "AlfrescoTreeViewer";
             this.Text = "Alfresco Tree Viewer";
+            this.Load += new System.EventHandler(this.AlfrescoTreeViewer_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 

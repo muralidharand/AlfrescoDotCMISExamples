@@ -18,7 +18,7 @@ namespace DotCMISExample
     {
     public partial class AlfrescoTreeViewer : Form
         {
-        private string alfrscoServerURL = "http://localhost:2020/";
+        private string alfrscoServerURL = "http://localhost:8080/";
         private string userName = "admin";
         private string password = "admin";
         private string ALFRESCO_ROOT = "Alfresco Root";
@@ -86,23 +86,30 @@ namespace DotCMISExample
                 DataTable dt = new DataTable();
                 dt.Columns.Add("Name");
                 dt.Columns.Add("Id");
+                dt.Columns.Add("Content Stream FileName");
+                dt.Columns.Add("Size (in bytes)");
+                dt.Columns.Add("MIME type");
 
                 DataRow documentRow = null;
 
                 foreach (ICmisObject cmisObject in selectedFolder.GetChildren())
                     {
                         /* If the current node is a document, then load them into folderDetailsGrid */
-                    if (cmisObject.GetType() != typeof(DotCMIS.Client.Impl.Folder))
+                    if (cmisObject.GetType() == typeof(DotCMIS.Client.Impl.Document))
                         {
-                        documentRow = dt.NewRow();
-                        documentRow["Name"] = cmisObject.Name;
-                        documentRow["Id"] = cmisObject.Id;
-                        dt.Rows.Add(documentRow);
+                            Document docObject = (DotCMIS.Client.Impl.Document)cmisObject;
+                            documentRow = dt.NewRow();
+                            documentRow["Name"] = docObject.Name;
+                            documentRow["Id"] = docObject.Id;
+                            documentRow["Content Stream FileName"] = docObject.ContentStreamFileName;
+                            documentRow["Size (in bytes)"] = docObject.ContentStreamLength;
+                            documentRow["MIME type"] = docObject.ContentStreamMimeType;
+                            dt.Rows.Add(documentRow);
                         }
                     /* If the current node is a folder, then load folder properties */
-                    else
+                    if (cmisObject.GetType() == typeof(DotCMIS.Client.Impl.Folder))
                         {
-
+                            
                             var folderProperties = selectedFolder;
                             DataTable folderPropertiesDt = new DataTable();
                             List<IProperty> properties = selectedFolder.Properties.ToList();
@@ -110,10 +117,10 @@ namespace DotCMISExample
                             folderPropertiesDt.Columns.Add("Value");
                             foreach (IProperty property in properties)
                                 {
-                                DataRow propertyRow = folderPropertiesDt.NewRow();
-                                propertyRow["Name"] = property.LocalName;
-                                propertyRow["Value"] = property.Value;
-                                folderPropertiesDt.Rows.Add(propertyRow);
+                                    DataRow propertyRow = folderPropertiesDt.NewRow();
+                                    propertyRow["Name"] = property.LocalName;
+                                    propertyRow["Value"] = property.Value;
+                                    folderPropertiesDt.Rows.Add(propertyRow);
                                 }
                             propertiesGrid.AutoGenerateColumns = true;
                             propertiesGrid.DataSource = folderPropertiesDt;
